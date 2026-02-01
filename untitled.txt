@@ -1,0 +1,209 @@
+DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Gym Tracker</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+        .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #333; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #218838; }
+        ul { list-style: none; padding: 0; margin-top: 20px; }
+        li { background: #eee; margin-bottom: 5px; padding: 10px; border-radius: 5px; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Gym Tracker </h2>
+    <input type="text" id="exercise" placeholder="Exercise ka naam (e.g. Bench Press)">
+    <input type="text" id="details" placeholder="Sets x Reps (e.g. 3 x 12)">
+    <button onclick="addLog()">Add Workout</button>
+
+    <ul id="logList"></ul>
+</div>
+
+<script>
+    function addLog() {
+        let ex = document.getElementById('exercise').value;
+        let det = document.getElementById('details').value;
+        
+        if(ex === '' || det === '') {
+            alert("Please dono fields bharein!");
+            return;
+        }
+
+        let li = document.createElement('li');
+        li.innerHTML = `<strong>${ex}</strong> <span>${det}</span>`;
+        
+        document.getElementById('logList').appendChild(li);
+
+        // Clear inputs
+        document.getElementById('exercise').value = '';
+        document.getElementById('details').value = '';
+    }
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Gym Tracker</title>
+    <style>
+        :root { --primary: #007bff; --danger: #dc3545; --bg: #121212; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; padding: 15px; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        h2 { text-align: center; margin-bottom: 20px; color: var(--primary); }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #333; background: #2a2a2a; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:active { transform: scale(0.98); }
+        .log-item { background: #2a2a2a; padding: 12px; margin-top: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary); }
+        .del-btn { background: var(--danger); width: auto; padding: 5px 10px; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>My Workout Log 💪</h2>
+    <input type="text" id="exercise" placeholder="Exercise (e.g. Chest Press)" maxlength="30">
+    <input type="text" id="details" placeholder="Sets/Reps (e.g. 3x12)" maxlength="15">
+    <button onclick="addLog()">Save Workout</button>
+
+    <div id="logContainer"></div>
+</div>
+
+<script>
+    // 1. Data Load karna
+    document.addEventListener('DOMContentLoaded', displayLogs);
+
+    function addLog() {
+        const ex = document.getElementById('exercise').value.trim();
+        const det = document.getElementById('details').value.trim();
+
+        // 2. Basic Security: Input Validation
+        if(ex === "" || det === "") {
+            alert("Please saari details bharein!");
+            return;
+        }
+
+        const workout = { id: Date.now(), ex, det };
+        
+        // 3. LocalStorage mein save karna
+        let logs = JSON.parse(localStorage.getItem('gymLogs') || "[]");
+        logs.push(workout);
+        localStorage.setItem('gymLogs', JSON.stringify(logs));
+
+        displayLogs();
+        
+        // Clear inputs
+        document.getElementById('exercise').value = '';
+        document.getElementById('details').value = '';
+    }
+
+    function displayLogs() {
+        const container = document.getElementById('logContainer');
+        const logs = JSON.parse(localStorage.getItem('gymLogs') || "[]");
+        
+        container.innerHTML = logs.map(item => `
+            <div class="log-item">
+                <div>
+                    <strong>${item.ex}</strong><br>
+                    <small style="color:#aaa">${item.det}</small>
+                </div>
+                <button class="del-btn" onclick="deleteLog(${item.id})">Delete</button>
+            </div>
+        `).join('');
+    }
+
+    function deleteLog(id) {
+        let logs = JSON.parse(localStorage.getItem('gymLogs'));
+        logs = logs.filter(item => item.id !== id);
+        localStorage.setItem('gymLogs', JSON.stringify(logs));
+        displayLogs();
+    }
+</script>
+
+</body>
+</html>
+<link rel="manifest" href="manifest.json">
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script><div id="workoutList" style="margin-top: 20px;">
+    </div>
+
+<div id="workoutModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000;">
+    <div style="background:white; margin:20% auto; padding:20px; width:80%; border-radius:15px; color:#333;">
+        <h3>Add New Workout</h3>
+        <input type="text" id="exName" placeholder="Exercise Name" style="border:1px solid #ddd; color: black;">
+        <input type="text" id="exReps" placeholder="Sets x Reps" style="border:1px solid #ddd; color: black;">
+        <div style="display:flex; gap:10px;">
+            <button onclick="saveWorkout()" style="background:#000;">Save</button>
+            <button onclick="closeModal()" style="background:#ccc; color:#000;">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Modal kholne ke liye
+    function openModal() {
+        document.getElementById('workoutModal').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('workoutModal').style.display = 'none';
+    }
+
+    // Data Save karne ke liye
+    function saveWorkout() {
+        const name = document.getElementById('exName').value;
+        const reps = document.getElementById('exReps').value;
+        
+        if(!name || !reps) return alert("Details bharein!");
+
+        const workout = {
+            id: Date.now(),
+            name: name,
+            reps: reps,
+            date: new Date().toLocaleDateString()
+        };
+
+        let workouts = JSON.parse(localStorage.getItem('myWorkouts') || "[]");
+        workouts.push(workout);
+        localStorage.setItem('myWorkouts', JSON.stringify(workouts));
+
+        closeModal();
+        displayWorkouts();
+        
+        // Inputs clear karein
+        document.getElementById('exName').value = '';
+        document.getElementById('exReps').value = '';
+    }
+
+    // Screen par dikhane ke liye
+    function displayWorkouts() {
+        const list = document.getElementById('workoutList');
+        let workouts = JSON.parse(localStorage.getItem('myWorkouts') || "[]");
+
+        list.innerHTML = workouts.map(w => `
+            <div style="background:#fff; color:#333; padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <div>
+                    <div style="font-weight:bold; font-size:16px;">${w.name}</div>
+                    <div style="font-size:12px; color:#666;">${w.date}</div>
+                </div>
+                <div style="font-weight:bold; color:#000;">${w.reps}</div>
+            </div>
+        `).join('');
+    }
+
+    // App load hote hi data dikhayein
+    window.onload = displayWorkouts;
+</script>
+
